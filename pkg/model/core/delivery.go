@@ -1,4 +1,4 @@
-package model
+package core
 
 type Delivery struct {
 	ID      int    `json:"-"`

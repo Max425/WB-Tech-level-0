@@ -1,10 +1,11 @@
+port: "8000"
+
 db:
   username: "postgres"
   host: "localhost"
   port: "5432"
-  dbname: "postgres"
+  dbname: "wb"
   sslmode: "disable"
-  password: "1474"
 
 redis:
   addr: "localhost:6379"

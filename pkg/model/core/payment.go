@@ -1,4 +1,4 @@
-package model
+package core
 
 type Payment struct {
 	ID           int     `json:"-"`

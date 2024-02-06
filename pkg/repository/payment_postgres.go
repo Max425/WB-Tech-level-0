@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ func NewPaymentRepository(db *sqlx.DB, log *zap.Logger) *PaymentRepository {
 	return &PaymentRepository{db: db, log: log}
 }
 
-func (r *PaymentRepository) Create(payment *model.Payment) (int, error) {
+func (r *PaymentRepository) Create(payment *core.Payment) (int, error) {
 	var id int
 
 	query := fmt.Sprintf(`
@@ -35,8 +35,8 @@ func (r *PaymentRepository) Create(payment *model.Payment) (int, error) {
 	return id, nil
 }
 
-func (r *PaymentRepository) GetAll() ([]model.Payment, error) {
-	var payments []model.Payment
+func (r *PaymentRepository) GetAll() ([]core.Payment, error) {
+	var payments []core.Payment
 
 	query := fmt.Sprintf("SELECT * FROM %s", constants.PaymentTable)
 	err := r.db.Select(&payments, query)
@@ -48,8 +48,8 @@ func (r *PaymentRepository) GetAll() ([]model.Payment, error) {
 	return payments, nil
 }
 
-func (r *PaymentRepository) GetById(id int) (*model.Payment, error) {
-	var payment model.Payment
+func (r *PaymentRepository) GetById(id int) (*core.Payment, error) {
+	var payment core.Payment
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", constants.PaymentTable)
 	err := r.db.Get(&payment, query, id)
@@ -61,7 +61,7 @@ func (r *PaymentRepository) GetById(id int) (*model.Payment, error) {
 	return &payment, nil
 }
 
-func (r *PaymentRepository) Update(updatedPayment *model.Payment) error {
+func (r *PaymentRepository) Update(updatedPayment *core.Payment) error {
 	query := fmt.Sprintf(`
 		UPDATE %s
 		SET transaction=$1, request_id=$2, currency=$3, provider=$4, amount=$5, payment_dt=$6, bank=$7, 

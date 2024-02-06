@@ -2,10 +2,10 @@ package handler
 
 import (
 	"fmt"
+	_ "github.com/Max425/WB-Tech-level-0/docs"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
 	"github.com/Max425/WB-Tech-level-0/pkg/service"
 	"github.com/gorilla/mux"
-	//_ "github.com/Max425/WB-Tech-level-0/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
 	"go.uber.org/zap"
 	"net/http"
@@ -30,11 +30,12 @@ func (h *Handler) InitRoutes() http.Handler {
 	))
 
 	apiRouter := r.PathPrefix("/api/v1").Subrouter()
-	//apiRouter.HandleFunc("/user", h.user).Methods("GET")
-	//apiRouter.HandleFunc("/user", h.updateUser).Methods("POST", "OPTIONS")
+	apiRouter.HandleFunc("/api/v1/customers/{uid}/orders", h.customerOrders).Methods("GET")
+	apiRouter.HandleFunc("/api/v1/order", h.newOrder).Methods("POST")
 
 	apiRouter.Use(
 		h.panicRecoveryMiddleware,
+		h.corsMiddleware,
 	)
 
 	return r

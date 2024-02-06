@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ func NewDeliveryRepository(db *sqlx.DB, log *zap.Logger) *DeliveryRepository {
 	return &DeliveryRepository{db: db, log: log}
 }
 
-func (r *DeliveryRepository) Create(delivery *model.Delivery) (int, error) {
+func (r *DeliveryRepository) Create(delivery *core.Delivery) (int, error) {
 	var id int
 
 	query := fmt.Sprintf(`
@@ -34,8 +34,8 @@ func (r *DeliveryRepository) Create(delivery *model.Delivery) (int, error) {
 	return id, nil
 }
 
-func (r *DeliveryRepository) GetAll() ([]model.Delivery, error) {
-	var deliveries []model.Delivery
+func (r *DeliveryRepository) GetAll() ([]core.Delivery, error) {
+	var deliveries []core.Delivery
 
 	query := fmt.Sprintf("SELECT * FROM %s", constants.DeliveryTable)
 	err := r.db.Select(&deliveries, query)
@@ -47,8 +47,8 @@ func (r *DeliveryRepository) GetAll() ([]model.Delivery, error) {
 	return deliveries, nil
 }
 
-func (r *DeliveryRepository) GetById(id int) (*model.Delivery, error) {
-	var delivery model.Delivery
+func (r *DeliveryRepository) GetById(id int) (*core.Delivery, error) {
+	var delivery core.Delivery
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", constants.DeliveryTable)
 	err := r.db.Get(&delivery, query, id)
@@ -60,7 +60,7 @@ func (r *DeliveryRepository) GetById(id int) (*model.Delivery, error) {
 	return &delivery, nil
 }
 
-func (r *DeliveryRepository) Update(updatedDelivery *model.Delivery) error {
+func (r *DeliveryRepository) Update(updatedDelivery *core.Delivery) error {
 	query := fmt.Sprintf(`
 		UPDATE %s
 		SET name=$1, phone=$2, zip=$3, city=$4, address=$5, region=$6, email=$7

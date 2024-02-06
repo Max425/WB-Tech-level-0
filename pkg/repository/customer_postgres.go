@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ func NewCustomerRepository(db *sqlx.DB, log *zap.Logger) *CustomerRepository {
 	return &CustomerRepository{db: db, log: log}
 }
 
-func (r *CustomerRepository) Create(customer *model.Customer) error {
+func (r *CustomerRepository) Create(customer *core.Customer) error {
 	query := fmt.Sprintf(`
 		INSERT INTO %s (customer_uid, email)
 		VALUES ($1, $2)`,
@@ -32,8 +32,8 @@ func (r *CustomerRepository) Create(customer *model.Customer) error {
 	return nil
 }
 
-func (r *CustomerRepository) GetAll() ([]model.Customer, error) {
-	var customers []model.Customer
+func (r *CustomerRepository) GetAll() ([]core.Customer, error) {
+	var customers []core.Customer
 
 	query := fmt.Sprintf("SELECT * FROM %s", constants.CustomerTable)
 	err := r.db.Select(&customers, query)
@@ -45,8 +45,8 @@ func (r *CustomerRepository) GetAll() ([]model.Customer, error) {
 	return customers, nil
 }
 
-func (r *CustomerRepository) GetByUid(customerUid string) (*model.Customer, error) {
-	var customer model.Customer
+func (r *CustomerRepository) GetByUid(customerUid string) (*core.Customer, error) {
+	var customer core.Customer
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE customer_uid = $1", constants.CustomerTable)
 	err := r.db.Get(&customer, query, customerUid)
@@ -58,7 +58,7 @@ func (r *CustomerRepository) GetByUid(customerUid string) (*model.Customer, erro
 	return &customer, nil
 }
 
-func (r *CustomerRepository) Update(updatedCustomer *model.Customer) error {
+func (r *CustomerRepository) Update(updatedCustomer *core.Customer) error {
 	query := fmt.Sprintf(`
 		UPDATE %s
 		SET email=$1

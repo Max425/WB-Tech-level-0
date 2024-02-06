@@ -1,4 +1,4 @@
-package model
+package core
 
 type Customer struct {
 	CustomerUid string `json:"customer_uid"`

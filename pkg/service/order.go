@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/Max425/WB-Tech-level-0/pkg/repository"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ func NewOrderService(repo *repository.Repository) *OrderService {
 	return &OrderService{repo: repo}
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, order *model.Order) (int, error) {
+func (s *OrderService) CreateOrder(ctx context.Context, order *core.Order) (int, error) {
 	id, err := s.repo.Order.Create(order)
 	if err != nil {
 		s.log.Error("Error CreateOrder", zap.Error(err))
@@ -32,9 +32,9 @@ func (s *OrderService) CreateOrder(ctx context.Context, order *model.Order) (int
 	return id, nil
 }
 
-func (s *OrderService) GetOrderById(ctx context.Context, id int) (*model.Order, error) {
+func (s *OrderService) GetOrderById(ctx context.Context, id int) (*core.Order, error) {
 	cache, err := s.repo.Store.Get(ctx, id)
-	orderCache := cache.(*model.Order)
+	orderCache := cache.(*core.Order)
 	if err == nil && orderCache != nil {
 		s.log.Info("Order from cache")
 		return orderCache, nil
@@ -45,6 +45,33 @@ func (s *OrderService) GetOrderById(ctx context.Context, id int) (*model.Order, 
 		return nil, err
 	}
 
+	return s.fillOrder(order)
+}
+
+func (s *OrderService) GetCustomerOrders(ctx context.Context, customerId string) ([]core.Order, error) {
+	orders, err := s.repo.Order.GetCustomerOrders(customerId)
+	if err != nil {
+		s.log.Error("Error get customer orders", zap.Error(err))
+		return nil, err
+	}
+	for i := 0; i < len(orders); i++ {
+		cache, err := s.repo.Store.Get(ctx, orders[i].ID)
+		orderCache := cache.(*core.Order)
+		if err == nil && orderCache != nil {
+			orders[i] = *orderCache
+		} else {
+			data, err := s.fillOrder(&orders[i])
+			if err != nil {
+				return nil, err
+			}
+			orders[i] = *data
+		}
+	}
+
+	return orders, nil
+}
+
+func (s *OrderService) fillOrder(order *core.Order) (*core.Order, error) {
 	payment, err := s.repo.Payment.GetById(order.Payment.ID)
 	if err != nil {
 		s.log.Error("Error get payment for order", zap.Error(err))

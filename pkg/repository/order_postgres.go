@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 	"strings"
@@ -19,7 +19,7 @@ func NewOrderRepository(db *sqlx.DB, log *zap.Logger) *OrderRepository {
 	return &OrderRepository{db: db, log: log}
 }
 
-func (r *OrderRepository) Create(order *model.Order) (int, error) {
+func (r *OrderRepository) Create(order *core.Order) (int, error) {
 	var id int
 
 	tx, err := r.db.Begin()
@@ -46,8 +46,8 @@ func (r *OrderRepository) Create(order *model.Order) (int, error) {
 	return id, tx.Commit()
 }
 
-func (r *OrderRepository) GetById(id int) (*model.Order, error) {
-	var order model.Order
+func (r *OrderRepository) GetById(id int) (*core.Order, error) {
+	var order core.Order
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", constants.OrderTable)
 	err := r.db.Get(&order, query, id)
@@ -59,7 +59,20 @@ func (r *OrderRepository) GetById(id int) (*model.Order, error) {
 	return &order, nil
 }
 
-func (r *OrderRepository) Update(updatedOrder *model.Order) error {
+func (r *OrderRepository) GetCustomerOrders(customerId string) ([]core.Order, error) {
+	var orders []core.Order
+
+	query := fmt.Sprintf("SELECT * FROM %s WHERE customer_id = $1", constants.OrderTable)
+	err := r.db.Get(&orders, query, customerId)
+	if err != nil {
+		r.log.Error("Error retrieving order by Customer ID", zap.Error(err))
+		return nil, err
+	}
+
+	return orders, nil
+}
+
+func (r *OrderRepository) Update(updatedOrder *core.Order) error {
 	tx, err := r.db.Begin()
 	if err != nil {
 		r.log.Error("Error beginning transaction", zap.Error(err))
@@ -106,7 +119,7 @@ func (r *OrderRepository) Delete(id int) error {
 	return nil
 }
 
-func addOrderItems(tx *sql.Tx, orderID int, updatedItems []model.Item) error {
+func addOrderItems(tx *sql.Tx, orderID int, updatedItems []core.Item) error {
 	var query strings.Builder
 	query.WriteString(fmt.Sprintf("INSERT INTO %s (order_id, item_id) VALUES ", constants.OrderItemTable))
 

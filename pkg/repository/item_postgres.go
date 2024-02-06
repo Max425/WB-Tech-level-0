@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 )
@@ -17,7 +17,7 @@ func NewItemRepository(db *sqlx.DB, log *zap.Logger) *ItemRepository {
 	return &ItemRepository{db: db, log: log}
 }
 
-func (r *ItemRepository) Create(item *model.Item) (int, error) {
+func (r *ItemRepository) Create(item *core.Item) (int, error) {
 	var id int
 
 	query := fmt.Sprintf(`
@@ -35,8 +35,8 @@ func (r *ItemRepository) Create(item *model.Item) (int, error) {
 	return id, nil
 }
 
-func (r *ItemRepository) GetAll() ([]model.Item, error) {
-	var items []model.Item
+func (r *ItemRepository) GetAll() ([]core.Item, error) {
+	var items []core.Item
 
 	query := fmt.Sprintf("SELECT * FROM %s", constants.ItemTable)
 	err := r.db.Select(&items, query)
@@ -48,8 +48,8 @@ func (r *ItemRepository) GetAll() ([]model.Item, error) {
 	return items, nil
 }
 
-func (r *ItemRepository) GetByOrderId(orderId int) ([]model.Item, error) {
-	var items []model.Item
+func (r *ItemRepository) GetByOrderId(orderId int) ([]core.Item, error) {
+	var items []core.Item
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id IN (SELECT item_id FROM %s WHERE order_id = $1)", constants.ItemTable, constants.OrderItemTable)
 	err := r.db.Select(&items, query, orderId)
@@ -61,8 +61,8 @@ func (r *ItemRepository) GetByOrderId(orderId int) ([]model.Item, error) {
 	return items, nil
 }
 
-func (r *ItemRepository) GetById(id int) (*model.Item, error) {
-	var item model.Item
+func (r *ItemRepository) GetById(id int) (*core.Item, error) {
+	var item core.Item
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", constants.ItemTable)
 	err := r.db.Get(&item, query, id)
@@ -74,7 +74,7 @@ func (r *ItemRepository) GetById(id int) (*model.Item, error) {
 	return &item, nil
 }
 
-func (r *ItemRepository) Update(updatedItem *model.Item) error {
+func (r *ItemRepository) Update(updatedItem *core.Item) error {
 	query := fmt.Sprintf(`
 		UPDATE %s
 		SET chrt_id=$1, track_number=$2, price=$3, rid=$4, item_name=$5, sale=$6, size=$7, total_price=$8,

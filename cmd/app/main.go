@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	initial "github.com/Max425/WB-Tech-level-0/cmd"
 	"github.com/Max425/WB-Tech-level-0/pkg/api"
 	"github.com/Max425/WB-Tech-level-0/pkg/api/handler"
 	"github.com/Max425/WB-Tech-level-0/pkg/repository"
@@ -22,8 +23,8 @@ import (
 // @host localhost:8000
 // @BasePath /
 func main() {
-	InitConfig()
-	logger, err := InitLogger()
+	initial.InitConfig()
+	logger, err := initial.InitLogger()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -32,13 +33,13 @@ func main() {
 
 	ctx := context.Background()
 
-	db, err := InitPostgres(ctx)
+	db, err := initial.InitPostgres(ctx)
 	if err != nil {
 		logger.Error("initialize Postgres",
 			zap.String("Error", fmt.Sprintf("failed to initialize Postgres: %s", err.Error())))
 	}
 
-	redis, err := InitRedis()
+	redis, err := initial.InitRedis()
 	if err != nil {
 		logger.Error("initialize redisDb",
 			zap.String("Error", fmt.Sprintf("failed to initialize redisDb: %s", err.Error())))

@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"github.com/Max425/WB-Tech-level-0/pkg/model"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/jmoiron/sqlx"
 	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
@@ -10,42 +10,43 @@ import (
 )
 
 type Delivery interface {
-	Create(delivery *model.Delivery) (int, error)
-	GetAll() ([]model.Delivery, error)
-	GetById(id int) (*model.Delivery, error)
-	Update(updatedDelivery *model.Delivery) error
+	Create(delivery *core.Delivery) (int, error)
+	GetAll() ([]core.Delivery, error)
+	GetById(id int) (*core.Delivery, error)
+	Update(updatedDelivery *core.Delivery) error
 	Delete(id int) error
 }
 
 type Item interface {
-	Create(item *model.Item) (int, error)
-	GetAll() ([]model.Item, error)
-	GetByOrderId(orderId int) ([]model.Item, error)
-	GetById(id int) (*model.Item, error)
-	Update(updatedItem *model.Item) error
+	Create(item *core.Item) (int, error)
+	GetAll() ([]core.Item, error)
+	GetByOrderId(orderId int) ([]core.Item, error)
+	GetById(id int) (*core.Item, error)
+	Update(updatedItem *core.Item) error
 	Delete(id int) error
 }
 
 type Order interface {
-	Create(order *model.Order) (int, error)
-	GetById(id int) (*model.Order, error)
-	Update(updatedOrder *model.Order) error
+	Create(order *core.Order) (int, error)
+	GetById(id int) (*core.Order, error)
+	GetCustomerOrders(customerId string) ([]core.Order, error)
+	Update(updatedOrder *core.Order) error
 	Delete(id int) error
 }
 
 type Payment interface {
-	Create(payment *model.Payment) (int, error)
-	GetAll() ([]model.Payment, error)
-	GetById(id int) (*model.Payment, error)
-	Update(updatedPayment *model.Payment) error
+	Create(payment *core.Payment) (int, error)
+	GetAll() ([]core.Payment, error)
+	GetById(id int) (*core.Payment, error)
+	Update(updatedPayment *core.Payment) error
 	Delete(id int) error
 }
 
 type Customer interface {
-	Create(customer *model.Customer) error
-	GetAll() ([]model.Customer, error)
-	GetByUid(customerUid string) (*model.Customer, error)
-	Update(updatedCustomer *model.Customer) error
+	Create(customer *core.Customer) error
+	GetAll() ([]core.Customer, error)
+	GetByUid(customerUid string) (*core.Customer, error)
+	Update(updatedCustomer *core.Customer) error
 	Delete(customerUid string) error
 }
 
