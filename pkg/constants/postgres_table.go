@@ -6,4 +6,5 @@ const (
 	ItemTable      = "\"item\""
 	OrderTable     = "\"order\""
 	OrderItemTable = "\"order_item\""
+	CustomerTable  = "\"customer\""
 )

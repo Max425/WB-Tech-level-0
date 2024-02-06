@@ -22,7 +22,7 @@ func (r *DeliveryRepository) Create(delivery *model.Delivery) (int, error) {
 
 	query := fmt.Sprintf(`
 		INSERT INTO %s (name, phone, zip, city, address, region, email)
-		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING delivery_id`,
+		VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
 		constants.DeliveryTable)
 
 	err := r.db.QueryRow(query, delivery.Name, delivery.Phone, delivery.Zip, delivery.City, delivery.Address, delivery.Region, delivery.Email).Scan(&id)
@@ -50,7 +50,7 @@ func (r *DeliveryRepository) GetAll() ([]model.Delivery, error) {
 func (r *DeliveryRepository) GetById(id int) (*model.Delivery, error) {
 	var delivery model.Delivery
 
-	query := fmt.Sprintf("SELECT * FROM %s WHERE delivery_id = $1", constants.DeliveryTable)
+	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", constants.DeliveryTable)
 	err := r.db.Get(&delivery, query, id)
 	if err != nil {
 		r.log.Error("Error retrieving delivery by ID", zap.Error(err))
@@ -60,15 +60,15 @@ func (r *DeliveryRepository) GetById(id int) (*model.Delivery, error) {
 	return &delivery, nil
 }
 
-func (r *DeliveryRepository) Update(id int, updatedDelivery *model.Delivery) error {
+func (r *DeliveryRepository) Update(updatedDelivery *model.Delivery) error {
 	query := fmt.Sprintf(`
 		UPDATE %s
 		SET name=$1, phone=$2, zip=$3, city=$4, address=$5, region=$6, email=$7
-		WHERE delivery_id = $8`,
+		WHERE id = $8`,
 		constants.DeliveryTable)
 
 	_, err := r.db.Exec(query, updatedDelivery.Name, updatedDelivery.Phone, updatedDelivery.Zip,
-		updatedDelivery.City, updatedDelivery.Address, updatedDelivery.Region, updatedDelivery.Email, id)
+		updatedDelivery.City, updatedDelivery.Address, updatedDelivery.Region, updatedDelivery.Email, updatedDelivery.ID)
 	if err != nil {
 		r.log.Error("Error updating delivery", zap.Error(err))
 		return err
@@ -78,7 +78,7 @@ func (r *DeliveryRepository) Update(id int, updatedDelivery *model.Delivery) err
 }
 
 func (r *DeliveryRepository) Delete(id int) error {
-	query := fmt.Sprintf("DELETE FROM %s WHERE delivery_id = $1", constants.DeliveryTable)
+	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", constants.DeliveryTable)
 
 	_, err := r.db.Exec(query, id)
 	if err != nil {
