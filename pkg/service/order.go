@@ -9,11 +9,11 @@ import (
 )
 
 type OrderService struct {
-	repo repository.Repository
+	repo *repository.Repository
 	log  *zap.Logger
 }
 
-func NewOrderService(repo repository.Repository) *OrderService {
+func NewOrderService(repo *repository.Repository) *OrderService {
 	return &OrderService{repo: repo}
 }
 
