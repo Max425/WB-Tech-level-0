@@ -18,7 +18,7 @@ import (
 
 // @title WB API
 // @version 1.0
-// @description API Server for Umlaut Application
+// @description API Server for WB-level-0 Application
 
 // @host localhost:8000
 // @BasePath /
@@ -47,7 +47,7 @@ func main() {
 	defer redis.Close()
 
 	repos := repository.NewRepository(db, redis, logger)
-	services := service.NewService(repos)
+	services := service.NewService(repos, logger)
 	handlers := handler.NewHandler(services, logger)
 
 	srv := new(api.Server)
@@ -56,18 +56,17 @@ func main() {
 
 	go func() {
 		if err = srv.Serve(viper.GetString("port"), handlers.InitRoutes()); err != nil {
-			logger.Error("running http server",
-				zap.String("Error", fmt.Sprintf("error occured while running http server: %s", err.Error())))
+			logger.Error("error occurred on server shutting down", zap.Error(err))
+			os.Exit(1)
 		}
 	}()
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
 
-	logger.Info("TodoApp Shutting Down")
+	logger.Info("WB Shutting Down")
 
 	if err = srv.Shutdown(context.Background()); err != nil {
-		logger.Error("error occured on server shutting down: %s",
-			zap.Error(err))
+		logger.Error("error occurred on server shutting down: %s", zap.Error(err))
 	}
 }

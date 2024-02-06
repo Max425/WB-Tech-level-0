@@ -72,6 +72,19 @@ func (r *OrderRepository) GetCustomerOrders(customerId string) ([]core.Order, er
 	return orders, nil
 }
 
+func (r *OrderRepository) GetAll() ([]core.Order, error) {
+	var orders []core.Order
+
+	query := fmt.Sprintf("SELECT * FROM %s", constants.OrderTable)
+	err := r.db.Get(&orders, query)
+	if err != nil {
+		r.log.Error("Error retrieving orders", zap.Error(err))
+		return nil, err
+	}
+
+	return orders, nil
+}
+
 func (r *OrderRepository) Update(updatedOrder *core.Order) error {
 	tx, err := r.db.Begin()
 	if err != nil {

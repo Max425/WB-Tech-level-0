@@ -30,6 +30,7 @@ type Order interface {
 	Create(order *core.Order) (int, error)
 	GetById(id int) (*core.Order, error)
 	GetCustomerOrders(customerId string) ([]core.Order, error)
+	GetAll() ([]core.Order, error)
 	Update(updatedOrder *core.Order) error
 	Delete(id int) error
 }

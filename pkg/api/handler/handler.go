@@ -30,8 +30,12 @@ func (h *Handler) InitRoutes() http.Handler {
 	))
 
 	apiRouter := r.PathPrefix("/api/v1").Subrouter()
-	apiRouter.HandleFunc("/api/v1/customers/{uid}/orders", h.customerOrders).Methods("GET")
-	apiRouter.HandleFunc("/api/v1/order", h.newOrder).Methods("POST")
+	apiRouter.HandleFunc("/customers/{uid}/orders", h.customerOrders).Methods("GET")
+	apiRouter.HandleFunc("/order", h.newOrder).Methods("POST")
+	apiRouter.HandleFunc("/delivery", h.newDelivery).Methods("POST")
+	apiRouter.HandleFunc("/payment", h.newPayment).Methods("POST")
+	apiRouter.HandleFunc("/customer", h.newCustomer).Methods("POST")
+	apiRouter.HandleFunc("/item", h.newItem).Methods("POST")
 
 	apiRouter.Use(
 		h.panicRecoveryMiddleware,

@@ -13,8 +13,8 @@ type OrderService struct {
 	log  *zap.Logger
 }
 
-func NewOrderService(repo *repository.Repository) *OrderService {
-	return &OrderService{repo: repo}
+func NewOrderService(repo *repository.Repository, log *zap.Logger) *OrderService {
+	return &OrderService{repo: repo, log: log}
 }
 
 func (s *OrderService) CreateOrder(ctx context.Context, order *core.Order) (int, error) {
@@ -69,6 +69,26 @@ func (s *OrderService) GetCustomerOrders(ctx context.Context, customerId string)
 	}
 
 	return orders, nil
+}
+
+func (s *OrderService) LoadOrdersToCache(ctx context.Context) error {
+	orders, err := s.repo.Order.GetAll()
+	if err != nil {
+		s.log.Error("Error load orders to cache", zap.Error(err))
+		return err
+	}
+	for _, order := range orders {
+		data, err := s.fillOrder(&order)
+		if err != nil {
+			s.log.Error("Error load orders to cache", zap.Error(err))
+			return err
+		}
+		err = s.repo.Store.Set(ctx, data.ID, data, constants.CacheDuration)
+		if err != nil {
+			s.log.Error("Error load order to cache", zap.Error(err))
+		}
+	}
+	return nil
 }
 
 func (s *OrderService) fillOrder(order *core.Order) (*core.Order, error) {

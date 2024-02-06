@@ -2,6 +2,6 @@ package constants
 
 import "time"
 
-const (
+var (
 	CacheDuration = 2 * time.Hour
 )

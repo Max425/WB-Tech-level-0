@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+type CreateResponse struct {
+	ID interface{} `json:"id"`
+}
+
 func SendData(w http.ResponseWriter, response interface{}, statusCode int) {
 	responseJSON, err := json.Marshal(response)
 	if err != nil {

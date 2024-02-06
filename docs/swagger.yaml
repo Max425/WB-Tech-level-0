@@ -1,5 +1,12 @@
 basePath: /
 definitions:
+  core.Customer:
+    properties:
+      customer_uid:
+        type: string
+      email:
+        type: string
+    type: object
   core.Delivery:
     properties:
       address:
@@ -101,10 +108,39 @@ definitions:
 host: localhost:8000
 info:
   contact: {}
-  description: API Server for Umlaut Application
+  description: API Server for WB-level-0 Application
   title: WB API
   version: "1.0"
 paths:
+  /api/v1/customer:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: New customer
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/core.Customer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Customer'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: create Customer
+      tags:
+      - customer
   /api/v1/customers/{uid}/orders:
     get:
       consumes:
@@ -125,6 +161,64 @@ paths:
       summary: get customer orders
       tags:
       - order
+  /api/v1/delivery:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: New delivery
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/core.Delivery'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Delivery'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: create Delivery
+      tags:
+      - delivery
+  /api/v1/item:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: New item
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/core.Item'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Item'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: create Item
+      tags:
+      - item
   /api/v1/order:
     post:
       consumes:
@@ -143,6 +237,10 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/core.Order'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
         "500":
           description: Internal Server Error
           schema:
@@ -150,4 +248,33 @@ paths:
       summary: create Order
       tags:
       - order
+  /api/v1/payment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: New payment
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/core.Payment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/core.Payment'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: create Payment
+      tags:
+      - payment
 swagger: "2.0"

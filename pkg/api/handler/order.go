@@ -37,7 +37,7 @@ func (h *Handler) customerOrders(w http.ResponseWriter, r *http.Request) {
 // @Produce  json
 // @Param input body core.Order true "New order"
 // @Success 200 {object} core.Order
-// @Failure 500 {object} string
+// @Failure 400,500 {object} string
 // @Router /api/v1/order [post]
 func (h *Handler) newOrder(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
@@ -56,5 +56,7 @@ func (h *Handler) newOrder(w http.ResponseWriter, r *http.Request) {
 		dto.SendData(w, "some error", http.StatusInternalServerError)
 		return
 	}
-	dto.SendData(w, createOrder, http.StatusBadRequest)
+
+	response := dto.CreateResponse{ID: createOrder}
+	dto.SendData(w, response, http.StatusOK)
 }
