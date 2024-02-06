@@ -1,7 +1,7 @@
 package core
 
 type Payment struct {
-	ID           int     `json:"-"`
+	ID           int     `json:"id"`
 	Transaction  string  `json:"transaction"`
 	RequestID    string  `json:"request_id"`
 	Currency     string  `json:"currency"`

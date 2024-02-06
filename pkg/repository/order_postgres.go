@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
 	"strings"
+	"time"
 )
 
 type OrderRepository struct {
@@ -37,7 +38,7 @@ func (r *OrderRepository) Create(order *core.Order) (int, error) {
 	err = tx.QueryRow(query, order.OrderUID, order.TrackNumber, order.Entry, order.Delivery.ID,
 		order.Payment.ID, order.Locale, order.InternalSignature, order.CustomerID, order.DeliveryService,
 		order.ShardKey, order.SMID, order.DateCreated, order.OofShard).Scan(&id)
-	if err != nil || addOrderItems(tx, order.ID, order.Items) != nil {
+	if err != nil || addOrderItems(tx, id, order.Items) != nil {
 		r.log.Error("Error creating order", zap.Error(err))
 		tx.Rollback()
 		return 0, err
@@ -59,17 +60,56 @@ func (r *OrderRepository) GetById(id int) (*core.Order, error) {
 	return &order, nil
 }
 
+type OrderResult struct {
+	ID                int       `db:"id"`
+	OrderUID          string    `db:"order_uid"`
+	TrackNumber       string    `db:"track_number"`
+	Entry             string    `db:"entry"`
+	DeliveryID        int       `db:"delivery_id"`
+	PaymentID         int       `db:"payment_id"`
+	Locale            string    `db:"locale"`
+	InternalSignature string    `db:"internal_signature"`
+	CustomerID        string    `db:"customer_id"`
+	DeliveryService   string    `db:"delivery_service"`
+	ShardKey          string    `db:"shard_key"`
+	SMID              int       `db:"sm_id"`
+	DateCreated       time.Time `db:"date_created"`
+	UpdatedAt         time.Time `db:"updated_at"`
+	OofShard          string    `db:"oof_shard"`
+}
+
 func (r *OrderRepository) GetCustomerOrders(customerId string) ([]core.Order, error) {
-	var orders []core.Order
+	var orders []OrderResult
 
 	query := fmt.Sprintf("SELECT * FROM %s WHERE customer_id = $1", constants.OrderTable)
-	err := r.db.Get(&orders, query, customerId)
+	err := r.db.Select(&orders, query, customerId)
 	if err != nil {
 		r.log.Error("Error retrieving order by Customer ID", zap.Error(err))
 		return nil, err
 	}
 
-	return orders, nil
+	var customerOrders []core.Order
+	for _, orderResult := range orders {
+		customerOrder := core.Order{
+			ID:                orderResult.ID,
+			OrderUID:          orderResult.OrderUID,
+			TrackNumber:       orderResult.TrackNumber,
+			Entry:             orderResult.Entry,
+			Delivery:          core.Delivery{ID: orderResult.DeliveryID},
+			Payment:           core.Payment{ID: orderResult.PaymentID},
+			Locale:            orderResult.Locale,
+			InternalSignature: orderResult.InternalSignature,
+			CustomerID:        orderResult.CustomerID,
+			DeliveryService:   orderResult.DeliveryService,
+			ShardKey:          orderResult.ShardKey,
+			SMID:              orderResult.SMID,
+			DateCreated:       orderResult.DateCreated,
+			OofShard:          orderResult.OofShard,
+		}
+		customerOrders = append(customerOrders, customerOrder)
+	}
+
+	return customerOrders, nil
 }
 
 func (r *OrderRepository) GetAll() ([]core.Order, error) {

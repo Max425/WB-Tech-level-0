@@ -15,6 +15,8 @@ definitions:
         type: string
       email:
         type: string
+      id:
+        type: integer
       name:
         type: string
       phone:
@@ -29,6 +31,8 @@ definitions:
       brand:
         type: string
       chrt_id:
+        type: integer
+      id:
         type: integer
       name:
         type: string
@@ -61,6 +65,8 @@ definitions:
         type: string
       entry:
         type: string
+      id:
+        type: integer
       internal_signature:
         type: string
       items:
@@ -96,6 +102,8 @@ definitions:
         type: number
       goods_total:
         type: number
+      id:
+        type: integer
       payment_dt:
         type: integer
       provider:
@@ -145,6 +153,12 @@ paths:
     get:
       consumes:
       - application/json
+      parameters:
+      - description: customer UID
+        in: path
+        name: uid
+        required: true
+        type: string
       produces:
       - application/json
       responses:

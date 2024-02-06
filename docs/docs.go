@@ -72,6 +72,15 @@ const docTemplate = `{
                     "order"
                 ],
                 "summary": "get customer orders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "customer UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -296,6 +305,9 @@ const docTemplate = `{
                 "email": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -317,6 +329,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "chrt_id": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "name": {
@@ -365,6 +380,9 @@ const docTemplate = `{
                 },
                 "entry": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "internal_signature": {
                     "type": "string"
@@ -418,6 +436,9 @@ const docTemplate = `{
                 },
                 "goods_total": {
                     "type": "number"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "payment_dt": {
                     "type": "integer"

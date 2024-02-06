@@ -13,6 +13,7 @@ import (
 // @Tags order
 // @Accept  json
 // @Produce  json
+// @Param uid path string true "customer UID"
 // @Success 200 {object} []core.Order
 // @Failure 500 {object} string
 // @Router /api/v1/customers/{uid}/orders [get]

@@ -52,8 +52,8 @@ type Customer interface {
 }
 
 type Store interface {
-	Set(ctx context.Context, key int, value interface{}, lifetime time.Duration) error
-	Get(ctx context.Context, key int) (interface{}, error)
+	Set(ctx context.Context, key int, value []byte, lifetime time.Duration) error
+	Get(ctx context.Context, key int) ([]byte, error)
 	Delete(ctx context.Context, key int) error
 }
 

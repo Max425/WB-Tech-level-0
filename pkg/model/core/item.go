@@ -1,7 +1,7 @@
 package core
 
 type Item struct {
-	ID          int     `json:"-"`
+	ID          int     `json:"id"`
 	ChrtID      int     `json:"chrt_id"`
 	TrackNumber string  `json:"track_number"`
 	Price       float64 `json:"price"`

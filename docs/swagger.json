@@ -66,6 +66,15 @@
                     "order"
                 ],
                 "summary": "get customer orders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "customer UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -290,6 +299,9 @@
                 "email": {
                     "type": "string"
                 },
+                "id": {
+                    "type": "integer"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -311,6 +323,9 @@
                     "type": "string"
                 },
                 "chrt_id": {
+                    "type": "integer"
+                },
+                "id": {
                     "type": "integer"
                 },
                 "name": {
@@ -359,6 +374,9 @@
                 },
                 "entry": {
                     "type": "string"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "internal_signature": {
                     "type": "string"
@@ -412,6 +430,9 @@
                 },
                 "goods_total": {
                     "type": "number"
+                },
+                "id": {
+                    "type": "integer"
                 },
                 "payment_dt": {
                     "type": "integer"

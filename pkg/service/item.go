@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
 	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
 	"github.com/Max425/WB-Tech-level-0/pkg/repository"
@@ -24,7 +25,11 @@ func (s *ItemService) CreateItem(ctx context.Context, item *core.Item) (int, err
 		return 0, err
 	}
 	item.ID = id
-	err = s.repo.Store.Set(ctx, item.ID, item, constants.CacheDuration)
+	jsonData, err := json.Marshal(item)
+	if err != nil {
+		panic(err)
+	}
+	err = s.repo.Store.Set(ctx, item.ID, jsonData, constants.CacheDuration)
 	if err != nil {
 		s.log.Error("Error set to cache", zap.Error(err))
 	}

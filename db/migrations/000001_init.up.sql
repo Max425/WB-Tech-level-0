@@ -18,7 +18,7 @@ CREATE TABLE payment
     currency      TEXT,
     provider      TEXT,
     amount        DECIMAL(10, 2),
-    payment_dt    TIMESTAMPTZ DEFAULT timezone('Europe/Moscow'::text, NOW()),
+    payment_dt    INT,
     bank          TEXT,
     delivery_cost DECIMAL(10, 2),
     goods_total   DECIMAL(10, 2),
