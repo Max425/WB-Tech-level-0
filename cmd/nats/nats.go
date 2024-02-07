@@ -6,6 +6,7 @@ import (
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
 	"github.com/Max425/WB-Tech-level-0/pkg/model/dto"
 	"github.com/nats-io/stan.go"
+	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"log"
 	"time"
@@ -24,7 +25,7 @@ func NewNats(sc stan.Conn, logger *zap.Logger) *Nats {
 }
 
 func (n *Nats) StartClient() {
-	sub, err := n.sc.Subscribe(constants.Subject, func(msg *stan.Msg) {
+	sub, err := n.sc.Subscribe(viper.GetString("nats.subject"), func(msg *stan.Msg) {
 		log.Printf("Received a message: %s\n", string(msg.Data))
 	}, stan.StartWithLastReceived())
 	if err != nil {
@@ -56,7 +57,7 @@ func (n *Nats) StartServer() {
 		order.OrderUID = UID
 		data, _ := order.MarshalJSON()
 
-		err = n.sc.Publish(constants.Subject, data)
+		err = n.sc.Publish(viper.GetString("nats.subject"), data)
 		if err != nil {
 			n.logger.Error("Error Publish message", zap.Error(err))
 			return

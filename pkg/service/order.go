@@ -20,7 +20,13 @@ func NewOrderService(repoOrder repository.Order, repoStore repository.Store, log
 	return &OrderService{repoOrder: repoOrder, repoStore: repoStore, log: log}
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, order *dto.Order, data []byte) (int, error) {
+func (s *OrderService) CreateOrder(ctx context.Context, data []byte) (int, error) {
+	var order dto.Order
+	err := order.UnmarshalJSON(data)
+	if err != nil {
+		return 0, constants.InvalidInputBodyError
+	}
+
 	id, err := s.repoOrder.Create(&core.Order{OrderUID: order.OrderUID, Data: data})
 	if err != nil {
 		s.log.Error(fmt.Sprintf("Error create order with UID: %s", order.OrderUID), zap.Error(err))

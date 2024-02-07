@@ -3,5 +3,6 @@ package constants
 import "errors"
 
 var (
-	AlreadyExistsError = errors.New("unique constraint error")
+	InvalidInputBodyError = errors.New("invalid input body")
+	AlreadyExistsError    = errors.New("unique constraint error")
 )

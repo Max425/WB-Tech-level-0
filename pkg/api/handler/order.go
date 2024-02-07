@@ -69,14 +69,12 @@ func (h *Handler) newOrder(w http.ResponseWriter, r *http.Request) {
 		dto.NewErrorClientResponseDto(r.Context(), w, http.StatusBadRequest, "invalid input body")
 		return
 	}
-	var order dto.Order
-	err = order.UnmarshalJSON(body)
+	createOrder, err := h.services.Order.CreateOrder(r.Context(), body)
 	if err != nil {
-		dto.NewErrorClientResponseDto(r.Context(), w, http.StatusBadRequest, "invalid input body")
-		return
-	}
-	createOrder, err := h.services.Order.CreateOrder(r.Context(), &order, body)
-	if err != nil {
+		if errors.Is(err, constants.InvalidInputBodyError) {
+			dto.NewErrorClientResponseDto(r.Context(), w, http.StatusBadRequest, "invalid input body")
+			return
+		}
 		if errors.Is(err, constants.AlreadyExistsError) {
 			dto.NewErrorClientResponseDto(r.Context(), w, http.StatusConflict, "already created")
 			return
