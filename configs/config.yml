@@ -3,6 +3,7 @@ port: "8000"
 nats:
   clusterID: "test-cluster"
   clientID: "test-client"
+  serverID: "test-server"
   subject: "test-subject"
   url: "nats://localhost:4222"
 
