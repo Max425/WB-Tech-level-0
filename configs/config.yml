@@ -1,5 +1,11 @@
 port: "8000"
 
+nats:
+  clusterID: "test-cluster"
+  clientID: "client-123"
+  subject: "foo"
+  url: "nats://localhost:4222"
+
 db:
   username: "postgres"
   host: "localhost"

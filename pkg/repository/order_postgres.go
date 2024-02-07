@@ -68,7 +68,7 @@ func (r *OrderRepository) GetAll() ([]core.Order, error) {
 	var orders []core.Order
 
 	query := fmt.Sprintf("SELECT id, order_uid, data FROM %s", constants.OrderTable)
-	err := r.db.Get(&orders, query)
+	err := r.db.Select(&orders, query)
 	if err != nil {
 		r.log.Error("Error get all orders", zap.Error(err))
 		return nil, err

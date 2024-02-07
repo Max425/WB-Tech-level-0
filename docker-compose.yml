@@ -12,6 +12,11 @@ services:
 #    ports:
 #      - "5432:5432"
 
+  nats-server:
+    image: nats:latest
+    ports:
+      - "4222:4222"
+
   redis:
     image: redis:latest
     ports:

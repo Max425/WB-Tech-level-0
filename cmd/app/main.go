@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	initial "github.com/Max425/WB-Tech-level-0/cmd"
+	"github.com/Max425/WB-Tech-level-0/cmd"
+	"github.com/Max425/WB-Tech-level-0/cmd/nats"
 	"github.com/Max425/WB-Tech-level-0/pkg/api"
 	"github.com/Max425/WB-Tech-level-0/pkg/api/handler"
 	"github.com/Max425/WB-Tech-level-0/pkg/repository"
 	"github.com/Max425/WB-Tech-level-0/pkg/service"
+	"github.com/nats-io/stan.go"
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"log"
@@ -49,7 +51,6 @@ func main() {
 	repos := repository.NewRepository(db, redis, logger)
 	services := service.NewService(repos, logger)
 	handlers := handler.NewHandler(services, logger)
-
 	srv := new(api.Server)
 
 	go func() {
@@ -62,6 +63,7 @@ func main() {
 	if err != nil {
 		logger.Error("error load cache", zap.Error(err))
 	}
+	go startNats(logger)
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
@@ -72,4 +74,19 @@ func main() {
 	if err = srv.Shutdown(context.Background()); err != nil {
 		logger.Error("error occurred on server shutting down: %s", zap.Error(err))
 	}
+}
+
+func startNats(logger *zap.Logger) {
+	sc, err := stan.Connect(
+		viper.GetString("nats.clusterID"),
+		viper.GetString("nats.clientID"),
+		//stan.NatsURL(viper.GetString("nats.url")),
+	)
+	if err != nil {
+		logger.Error("Error stan Connect", zap.Error(err))
+		return
+	}
+	natsWorker := nats.NewNats(sc, logger)
+	go natsWorker.StartClient()
+	go natsWorker.StartServer()
 }
