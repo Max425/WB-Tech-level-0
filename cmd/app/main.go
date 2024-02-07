@@ -80,7 +80,7 @@ func startNats(logger *zap.Logger) {
 	sc, err := stan.Connect(
 		viper.GetString("nats.clusterID"),
 		viper.GetString("nats.clientID"),
-		//stan.NatsURL(viper.GetString("nats.url")),
+		stan.NatsURL(viper.GetString("nats.url")),
 	)
 	if err != nil {
 		logger.Error("Error stan Connect", zap.Error(err))
