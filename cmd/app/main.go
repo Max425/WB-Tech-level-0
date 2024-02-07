@@ -52,14 +52,17 @@ func main() {
 
 	srv := new(api.Server)
 
-	//TODO: LOAD CACHE
-
 	go func() {
 		if err = srv.Serve(viper.GetString("port"), handlers.InitRoutes()); err != nil {
 			logger.Error("error occurred on server shutting down", zap.Error(err))
 			os.Exit(1)
 		}
 	}()
+	err = services.Order.LoadOrdersToCache(ctx)
+	if err != nil {
+		logger.Error("error load cache", zap.Error(err))
+	}
+
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
 	<-quit
