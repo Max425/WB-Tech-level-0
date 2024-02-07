@@ -9,70 +9,28 @@ import (
 	"time"
 )
 
-type Delivery interface {
-	Create(delivery *core.Delivery) (int, error)
-	GetAll() ([]core.Delivery, error)
-	GetById(id int) (*core.Delivery, error)
-	Update(updatedDelivery *core.Delivery) error
-	Delete(id int) error
-}
-
-type Item interface {
-	Create(item *core.Item) (int, error)
-	GetAll() ([]core.Item, error)
-	GetByOrderId(orderId int) ([]core.Item, error)
-	GetById(id int) (*core.Item, error)
-	Update(updatedItem *core.Item) error
-	Delete(id int) error
-}
-
 type Order interface {
 	Create(order *core.Order) (int, error)
-	GetById(id int) (*core.Order, error)
-	GetCustomerOrders(customerId string) ([]core.Order, error)
+	GetByUID(UID string) (*core.Order, error)
+	GetCustomerOrders(customerUID string) ([]core.Order, error)
 	GetAll() ([]core.Order, error)
-	Update(updatedOrder *core.Order) error
-	Delete(id int) error
-}
-
-type Payment interface {
-	Create(payment *core.Payment) (int, error)
-	GetAll() ([]core.Payment, error)
-	GetById(id int) (*core.Payment, error)
-	Update(updatedPayment *core.Payment) error
-	Delete(id int) error
-}
-
-type Customer interface {
-	Create(customer *core.Customer) error
-	GetAll() ([]core.Customer, error)
-	GetByUid(customerUid string) (*core.Customer, error)
-	Update(updatedCustomer *core.Customer) error
-	Delete(customerUid string) error
+	DeleteByUID(UID string) error
 }
 
 type Store interface {
-	Set(ctx context.Context, key int, value []byte, lifetime time.Duration) error
-	Get(ctx context.Context, key int) ([]byte, error)
-	Delete(ctx context.Context, key int) error
+	Set(ctx context.Context, key string, value []byte, lifetime time.Duration) error
+	Get(ctx context.Context, key string) ([]byte, error)
+	Delete(ctx context.Context, key string) error
 }
 
 type Repository struct {
-	Delivery
-	Item
 	Order
-	Payment
-	Customer
 	Store
 }
 
 func NewRepository(db *sqlx.DB, redisClient *redis.Client, log *zap.Logger) *Repository {
 	return &Repository{
-		Delivery: NewDeliveryRepository(db, log),
-		Item:     NewItemRepository(db, log),
-		Order:    NewOrderRepository(db, log),
-		Payment:  NewPaymentRepository(db, log),
-		Customer: NewCustomerRepository(db, log),
-		Store:    NewRedisStore(redisClient),
+		Order: NewOrderRepository(db, log),
+		Store: NewRedisStore(redisClient),
 	}
 }

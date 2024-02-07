@@ -1,7 +1,6 @@
-package core
+package dto
 
 type Delivery struct {
-	ID      int    `json:"id"`
 	Name    string `json:"name"`
 	Phone   string `json:"phone"`
 	Zip     string `json:"zip"`

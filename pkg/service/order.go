@@ -2,128 +2,79 @@ package service
 
 import (
 	"context"
-	"encoding/json"
+	"fmt"
 	"github.com/Max425/WB-Tech-level-0/pkg/constants"
 	"github.com/Max425/WB-Tech-level-0/pkg/model/core"
+	"github.com/Max425/WB-Tech-level-0/pkg/model/dto"
 	"github.com/Max425/WB-Tech-level-0/pkg/repository"
 	"go.uber.org/zap"
 )
 
 type OrderService struct {
-	repo *repository.Repository
-	log  *zap.Logger
+	repoOrder repository.Order
+	repoStore repository.Store
+	log       *zap.Logger
 }
 
-func NewOrderService(repo *repository.Repository, log *zap.Logger) *OrderService {
-	return &OrderService{repo: repo, log: log}
+func NewOrderService(repoOrder repository.Order, repoStore repository.Store, log *zap.Logger) *OrderService {
+	return &OrderService{repoOrder: repoOrder, repoStore: repoStore, log: log}
 }
 
-func (s *OrderService) CreateOrder(ctx context.Context, order *core.Order) (int, error) {
-	id, err := s.repo.Order.Create(order)
+func (s *OrderService) CreateOrder(ctx context.Context, order *dto.Order, data []byte) (int, error) {
+	id, err := s.repoOrder.Create(&core.Order{OrderUID: order.OrderUID, Data: data})
 	if err != nil {
-		s.log.Error("Error CreateOrder", zap.Error(err))
+		s.log.Error(fmt.Sprintf("Error create order with UID: %s", order.OrderUID), zap.Error(err))
 		return 0, err
 	}
-	order.ID = id
-	jsonData, err := json.Marshal(*order)
+
+	err = s.repoStore.Set(ctx, order.OrderUID, data, constants.CacheDuration)
 	if err != nil {
-		s.log.Error("Error Marshal", zap.Error(err))
-		return id, nil
-	}
-	err = s.repo.Store.Set(ctx, order.ID, jsonData, constants.CacheDuration)
-	if err != nil {
-		s.log.Error("Error set to cache", zap.Error(err))
+		s.log.Error("Error set order to cache", zap.Error(err))
 	}
 
 	return id, nil
 }
 
-func (s *OrderService) GetOrderById(ctx context.Context, id int) (*core.Order, error) {
-	cache, err := s.repo.Store.Get(ctx, id)
-	var data core.Order
-	err = json.Unmarshal(cache, &data)
-	if err == nil && data.ID > 0 {
+func (s *OrderService) GetOrderByUID(ctx context.Context, UID string) (string, error) {
+	cache, err := s.repoStore.Get(ctx, UID)
+	if err == nil {
 		s.log.Info("Order from cache")
-		return &data, nil
+		return string(cache), nil
 	}
-	order, err := s.repo.Order.GetById(id)
+	order, err := s.repoOrder.GetByUID(UID)
 	if err != nil {
 		s.log.Error("Error set to cache", zap.Error(err))
-		return nil, err
+		return "", err
 	}
 
-	return s.fillOrder(order)
+	return string(order.Data), nil
 }
 
-func (s *OrderService) GetCustomerOrders(ctx context.Context, customerId string) ([]core.Order, error) {
-	orders, err := s.repo.Order.GetCustomerOrders(customerId)
+func (s *OrderService) GetCustomerOrders(customerUID string) ([]string, error) {
+	orders, err := s.repoOrder.GetCustomerOrders(customerUID)
 	if err != nil {
 		s.log.Error("Error get customer orders", zap.Error(err))
 		return nil, err
 	}
-	for i := 0; i < len(orders); i++ {
-		cache, err := s.repo.Store.Get(ctx, orders[i].ID)
-		var data core.Order
-		err = json.Unmarshal(cache, &data)
-		if err == nil && data.ID > 0 {
-			orders[i] = data
-		} else {
-			data, err := s.fillOrder(&orders[i])
-			if err != nil {
-				return nil, err
-			}
-			orders[i] = *data
-		}
+	var customerOrders []string
+	for _, order := range orders {
+		customerOrders = append(customerOrders, string(order.Data))
 	}
 
-	return orders, nil
+	return customerOrders, nil
 }
 
 func (s *OrderService) LoadOrdersToCache(ctx context.Context) error {
-	orders, err := s.repo.Order.GetAll()
+	orders, err := s.repoOrder.GetAll()
 	if err != nil {
-		s.log.Error("Error load orders to cache", zap.Error(err))
+		s.log.Error("Error get all orders", zap.Error(err))
 		return err
 	}
 	for _, order := range orders {
-		data, err := s.fillOrder(&order)
-		if err != nil {
-			s.log.Error("Error load orders to cache", zap.Error(err))
-			return err
-		}
-		jsonData, err := json.Marshal(*data)
-		if err != nil {
-			s.log.Error("Error Marshal", zap.Error(err))
-		}
-		err = s.repo.Store.Set(ctx, data.ID, jsonData, constants.CacheDuration)
+		err = s.repoStore.Set(ctx, order.OrderUID, order.Data, constants.CacheDuration)
 		if err != nil {
 			s.log.Error("Error load order to cache", zap.Error(err))
 		}
 	}
 	return nil
-}
-
-func (s *OrderService) fillOrder(order *core.Order) (*core.Order, error) {
-	payment, err := s.repo.Payment.GetById(order.Payment.ID)
-	if err != nil {
-		s.log.Error("Error get payment for order", zap.Error(err))
-		return nil, err
-	}
-	order.Payment = *payment
-
-	delivery, err := s.repo.Delivery.GetById(order.Delivery.ID)
-	if err != nil {
-		s.log.Error("Error get delivery for order", zap.Error(err))
-		return nil, err
-	}
-	order.Delivery = *delivery
-
-	items, err := s.repo.Item.GetByOrderId(order.ID)
-	if err != nil {
-		s.log.Error("Error get items for order", zap.Error(err))
-		return nil, err
-	}
-	order.Items = items
-
-	return order, nil
 }

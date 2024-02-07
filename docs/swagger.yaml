@@ -1,13 +1,14 @@
 basePath: /
 definitions:
-  core.Customer:
+  dto.ClientResponseDto:
     properties:
-      customer_uid:
+      message:
         type: string
-      email:
-        type: string
+      payload: {}
+      status:
+        type: integer
     type: object
-  core.Delivery:
+  dto.Delivery:
     properties:
       address:
         type: string
@@ -15,8 +16,6 @@ definitions:
         type: string
       email:
         type: string
-      id:
-        type: integer
       name:
         type: string
       phone:
@@ -26,13 +25,11 @@ definitions:
       zip:
         type: string
     type: object
-  core.Item:
+  dto.Item:
     properties:
       brand:
         type: string
       chrt_id:
-        type: integer
-      id:
         type: integer
       name:
         type: string
@@ -53,25 +50,23 @@ definitions:
       track_number:
         type: string
     type: object
-  core.Order:
+  dto.Order:
     properties:
       customer_id:
         type: string
       date_created:
         type: string
       delivery:
-        $ref: '#/definitions/core.Delivery'
+        $ref: '#/definitions/dto.Delivery'
       delivery_service:
         type: string
       entry:
         type: string
-      id:
-        type: integer
       internal_signature:
         type: string
       items:
         items:
-          $ref: '#/definitions/core.Item'
+          $ref: '#/definitions/dto.Item'
         type: array
       locale:
         type: string
@@ -80,7 +75,7 @@ definitions:
       order_uid:
         type: string
       payment:
-        $ref: '#/definitions/core.Payment'
+        $ref: '#/definitions/dto.Payment'
       shardkey:
         type: string
       sm_id:
@@ -88,7 +83,7 @@ definitions:
       track_number:
         type: string
     type: object
-  core.Payment:
+  dto.Payment:
     properties:
       amount:
         type: number
@@ -102,8 +97,6 @@ definitions:
         type: number
       goods_total:
         type: number
-      id:
-        type: integer
       payment_dt:
         type: integer
       provider:
@@ -120,35 +113,6 @@ info:
   title: WB API
   version: "1.0"
 paths:
-  /api/v1/customer:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: New customer
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/core.Customer'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/core.Customer'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: create Customer
-      tags:
-      - customer
   /api/v1/customers/{uid}/orders:
     get:
       consumes:
@@ -166,7 +130,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/core.Order'
+              $ref: '#/definitions/dto.Order'
             type: array
         "500":
           description: Internal Server Error
@@ -175,64 +139,6 @@ paths:
       summary: get customer orders
       tags:
       - order
-  /api/v1/delivery:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: New delivery
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/core.Delivery'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/core.Delivery'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: create Delivery
-      tags:
-      - delivery
-  /api/v1/item:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: New item
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/core.Item'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/core.Item'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
-        "500":
-          description: Internal Server Error
-          schema:
-            type: string
-      summary: create Item
-      tags:
-      - item
   /api/v1/order:
     post:
       consumes:
@@ -243,16 +149,20 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/core.Order'
+          $ref: '#/definitions/dto.Order'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/core.Order'
+            $ref: '#/definitions/dto.ClientResponseDto'
         "400":
           description: Bad Request
+          schema:
+            type: string
+        "409":
+          description: Conflict
           schema:
             type: string
         "500":
@@ -262,33 +172,28 @@ paths:
       summary: create Order
       tags:
       - order
-  /api/v1/payment:
-    post:
+  /api/v1/orders/{uid}:
+    get:
       consumes:
       - application/json
       parameters:
-      - description: New payment
-        in: body
-        name: input
+      - description: order UID
+        in: path
+        name: uid
         required: true
-        schema:
-          $ref: '#/definitions/core.Payment'
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/core.Payment'
-        "400":
-          description: Bad Request
-          schema:
-            type: string
+            $ref: '#/definitions/dto.Order'
         "500":
           description: Internal Server Error
           schema:
             type: string
-      summary: create Payment
+      summary: get order by UID
       tags:
-      - payment
+      - order
 swagger: "2.0"

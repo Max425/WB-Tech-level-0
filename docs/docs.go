@@ -15,51 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/customer": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customer"
-                ],
-                "summary": "create Customer",
-                "parameters": [
-                    {
-                        "description": "New customer",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.Customer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/core.Customer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/customers/{uid}/orders": {
             "get": {
                 "consumes": [
@@ -87,98 +42,8 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/core.Order"
+                                "$ref": "#/definitions/dto.Order"
                             }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/delivery": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "delivery"
-                ],
-                "summary": "create Delivery",
-                "parameters": [
-                    {
-                        "description": "New delivery",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.Delivery"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/core.Delivery"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/item": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "item"
-                ],
-                "summary": "create Item",
-                "parameters": [
-                    {
-                        "description": "New item",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.Item"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/core.Item"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
                         }
                     },
                     "500": {
@@ -209,7 +74,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/core.Order"
+                            "$ref": "#/definitions/dto.Order"
                         }
                     }
                 ],
@@ -217,11 +82,17 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/core.Order"
+                            "$ref": "#/definitions/dto.ClientResponseDto"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
                         "schema": {
                             "type": "string"
                         }
@@ -235,8 +106,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/payment": {
-            "post": {
+        "/api/v1/orders/{uid}": {
+            "get": {
                 "consumes": [
                     "application/json"
                 ],
@@ -244,31 +115,23 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "payment"
+                    "order"
                 ],
-                "summary": "create Payment",
+                "summary": "get order by UID",
                 "parameters": [
                     {
-                        "description": "New payment",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/core.Payment"
-                        }
+                        "type": "string",
+                        "description": "order UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
                     }
                 ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/core.Payment"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/dto.Order"
                         }
                     },
                     "500": {
@@ -282,18 +145,19 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "core.Customer": {
+        "dto.ClientResponseDto": {
             "type": "object",
             "properties": {
-                "customer_uid": {
+                "message": {
                     "type": "string"
                 },
-                "email": {
-                    "type": "string"
+                "payload": {},
+                "status": {
+                    "type": "integer"
                 }
             }
         },
-        "core.Delivery": {
+        "dto.Delivery": {
             "type": "object",
             "properties": {
                 "address": {
@@ -304,9 +168,6 @@ const docTemplate = `{
                 },
                 "email": {
                     "type": "string"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
@@ -322,16 +183,13 @@ const docTemplate = `{
                 }
             }
         },
-        "core.Item": {
+        "dto.Item": {
             "type": "object",
             "properties": {
                 "brand": {
                     "type": "string"
                 },
                 "chrt_id": {
-                    "type": "integer"
-                },
-                "id": {
                     "type": "integer"
                 },
                 "name": {
@@ -363,7 +221,7 @@ const docTemplate = `{
                 }
             }
         },
-        "core.Order": {
+        "dto.Order": {
             "type": "object",
             "properties": {
                 "customer_id": {
@@ -373,7 +231,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "delivery": {
-                    "$ref": "#/definitions/core.Delivery"
+                    "$ref": "#/definitions/dto.Delivery"
                 },
                 "delivery_service": {
                     "type": "string"
@@ -381,16 +239,13 @@ const docTemplate = `{
                 "entry": {
                     "type": "string"
                 },
-                "id": {
-                    "type": "integer"
-                },
                 "internal_signature": {
                     "type": "string"
                 },
                 "items": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/core.Item"
+                        "$ref": "#/definitions/dto.Item"
                     }
                 },
                 "locale": {
@@ -403,7 +258,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "payment": {
-                    "$ref": "#/definitions/core.Payment"
+                    "$ref": "#/definitions/dto.Payment"
                 },
                 "shardkey": {
                     "type": "string"
@@ -416,7 +271,7 @@ const docTemplate = `{
                 }
             }
         },
-        "core.Payment": {
+        "dto.Payment": {
             "type": "object",
             "properties": {
                 "amount": {
@@ -436,9 +291,6 @@ const docTemplate = `{
                 },
                 "goods_total": {
                     "type": "number"
-                },
-                "id": {
-                    "type": "integer"
                 },
                 "payment_dt": {
                     "type": "integer"
