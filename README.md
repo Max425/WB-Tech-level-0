@@ -1,3 +1,3 @@
-# WB Tech: level # 0 (Golang)
+# WB Tech: level # 1 (Golang)
 
-[Условие](https://docs.google.com/document/d/1f1Ni6u5mi4If5iyVMLQHjIAZJltDZc0QCGawitSSbxI/edit#heading=h.dk0adjgtyh6i)
+[Условие](https://docs.google.com/document/d/15wTlKrMy0clrp-qnIuW1u1Q0Z0W9MyGab5rWMf4kchQ/edit?usp=sharing)
