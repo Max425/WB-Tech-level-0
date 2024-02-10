@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	a := big.NewFloat(math.Pow(2, 20) + 10)
-	b := big.NewFloat(math.Pow(2, 20) + 15)
+	a := big.NewFloat(math.Pow(2, 20) + math.Pow(2, 10))
+	b := big.NewFloat(math.Pow(2, 20) + math.Pow(2, 8) + 1)
 
 	multiplyResult := new(big.Float).Mul(a, b)
 	fmt.Println("Умножение:", multiplyResult)

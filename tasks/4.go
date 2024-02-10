@@ -18,18 +18,20 @@ func main() {
 	exit := make(chan os.Signal, 1)
 	signal.Notify(exit, os.Interrupt, syscall.SIGTERM) //уведомить о нажатии Ctrl+C или о сигнале TERMINATE
 
-	var wg sync.WaitGroup
+	wg := sync.WaitGroup{}
 	wg.Add(numWorkers)
 
-	for i := 0; i < numWorkers; i++ {
-		go func(id int) {
-			defer wg.Done()
-			for data := range dataChannel {
-				fmt.Printf("Worker %d: %d\n", id, data)
-				time.Sleep(time.Second)
-			}
-		}(i + 1)
-	}
+	go func() {
+		for i := 0; i < numWorkers; i++ {
+			go func(id int) {
+				defer wg.Done()
+				for data := range dataChannel {
+					fmt.Printf("Worker %d: %d\n", id, data)
+					time.Sleep(time.Second)
+				}
+			}(i + 1)
+		}
+	}()
 
 	for i := 1; ; i++ {
 		select {

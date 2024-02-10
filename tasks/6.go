@@ -50,15 +50,15 @@ func worker3(wg *sync.WaitGroup) {
 }
 
 func main() {
-	var wg sync.WaitGroup
+	wg := new(sync.WaitGroup)
 	wg.Add(3)
 	stop := make(chan struct{})
-	go worker1(&wg, stop)
+	go worker1(wg, stop)
 
 	ctx, cancel := context.WithCancel(context.Background())
-	go worker2(&wg, ctx)
+	go worker2(wg, ctx)
 
-	go worker3(&wg)
+	go worker3(wg)
 
 	time.Sleep(3 * time.Second)
 

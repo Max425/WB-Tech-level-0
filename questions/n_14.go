@@ -6,7 +6,7 @@ func main() {
 	slice := []string{"a", "a"}
 
 	func(slice []string) { // как и в 13 номере - работаем с копией
-		slice = append(slice, "a")
+		slice = append(slice, "a") // append вернет новый срез, который уничножится при завершении функции
 		slice[0] = "b"
 		slice[1] = "b"
 		fmt.Print(slice) // [b b a]

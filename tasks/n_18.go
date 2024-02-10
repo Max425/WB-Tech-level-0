@@ -7,7 +7,7 @@ import (
 
 type ConcurrencyCounter struct {
 	mu      sync.Mutex
-	counter int
+	counter uint32
 }
 
 func NewConcurrencyCounter() *ConcurrencyCounter {

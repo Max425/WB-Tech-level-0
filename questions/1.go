@@ -36,7 +36,7 @@ func ranTest(way string, stringsToConcat []string, worker func(s []string) strin
 func getString(length int) []string {
 	stringsToConcat := make([]string, length)
 	for i := range stringsToConcat {
-		stringsToConcat[i] = "test"
+		stringsToConcat[i] = fmt.Sprintf("test %d", i)
 	}
 	return stringsToConcat
 }

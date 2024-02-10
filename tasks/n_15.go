@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-var justString string // не стоит создавать в глобальном скопе
+var justString string // не стоит создавать в глобальной области видимости
 
 func createHugeString(length int) string {
 	buffer := make([]byte, length)

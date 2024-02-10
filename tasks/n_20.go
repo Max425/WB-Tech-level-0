@@ -8,7 +8,8 @@ import (
 func reverseSlice(data []string) string {
 	n := len(data)
 	for i := 0; i < n/2; i++ {
-		data[i], data[n-1-i] = data[n-1-i], data[i]
+		invIndex := n - 1 - i
+		data[i], data[invIndex] = data[invIndex], data[i]
 	}
 	return strings.Join(data, " ")
 }

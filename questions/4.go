@@ -30,6 +30,7 @@ func main() {
 	ch := make(chan int)
 	var n int
 	fmt.Scanln(&n)
+	//ch <- n
 	bufferCh := make(chan int, n)
 	bufferCh <- 10
 	fmt.Println(ch, bufferCh)

@@ -4,19 +4,19 @@ import "fmt"
 
 type WindowsFan struct{}
 
-func (wf *WindowsFan) CheerWindowsFan() {
+func (wf *WindowsFan) SayWindowsFan() {
 	fmt.Println("Yeah! Windows forever!")
 }
 
 type LinuxFan struct{}
 
-func (lf *LinuxFan) CheerLinuxFan() {
+func (lf *LinuxFan) SayLinuxFan() {
 	fmt.Println("Go Linux! Open source power!")
 }
 
 // FanAdapter - интерфейс адаптера для фанатов
 type FanAdapter interface {
-	Cheer()
+	Say()
 }
 
 // WindowsFanAdapter - адаптер для фаната Windows
@@ -24,8 +24,8 @@ type WindowsFanAdapter struct {
 	windowsFan *WindowsFan
 }
 
-func (wfa *WindowsFanAdapter) Cheer() {
-	wfa.windowsFan.CheerWindowsFan()
+func (wfa *WindowsFanAdapter) Say() {
+	wfa.windowsFan.SayWindowsFan()
 }
 
 func NewWindowsFanAdapter(windowsFan *WindowsFan) FanAdapter {
@@ -37,8 +37,8 @@ type LinuxFanAdapter struct {
 	linuxFan *LinuxFan
 }
 
-func (lfa *LinuxFanAdapter) Cheer() {
-	lfa.linuxFan.CheerLinuxFan()
+func (lfa *LinuxFanAdapter) Say() {
+	lfa.linuxFan.SayLinuxFan()
 }
 
 func NewLinuxFanAdapter(linuxFan *LinuxFan) FanAdapter {
@@ -48,6 +48,6 @@ func NewLinuxFanAdapter(linuxFan *LinuxFan) FanAdapter {
 func main() {
 	myFamily := [2]FanAdapter{NewWindowsFanAdapter(&WindowsFan{}), NewLinuxFanAdapter(&LinuxFan{})}
 	for _, member := range myFamily {
-		member.Cheer()
+		member.Say()
 	}
 }
